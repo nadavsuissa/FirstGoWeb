@@ -5,6 +5,7 @@ import (
 	"FirstGoWeb/pkg/handlers"
 	"FirstGoWeb/pkg/render"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -21,9 +22,13 @@ func main() {
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandlers(repo)
 	render.NewTemplates(&app)
-	http.HandleFunc("/", handlers.Repo.Home)
-	http.HandleFunc("/about", handlers.Repo.About)
+
 	fmt.Println(fmt.Sprintf("Starting on port %s", portNumber))
-	_ = http.ListenAndServe(":8080", nil)
+	srv := &http.Server{
+		Addr:    portNumber,
+		Handler: routes(&app),
+	}
+	err = srv.ListenAndServe()
+	log.Fatal(err)
 
 }
